@@ -37,7 +37,7 @@ for iter = 1:10
     for i = 1:3
         for a = 1:2
             disp(['Optimizing M{', num2str(i), '}{1}{', num2str(a), '}']);
-            M{i}{1}{a} = sdpvar(4,4);
+            M{i}{1}{a} = sdpvar(4,4, 'hermitian', 'complex');
             cst = is_PSD(M{i}{1}{a});
             cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1} + M{i}{1}{2}, 1, [2 2]) - eye(2)));
             
