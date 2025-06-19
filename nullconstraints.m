@@ -1,5 +1,4 @@
 function constraints = nullconstraints(constraints, tol)
-    addpath('utils')
 
     if ~exist('tol','var')
         tol = 1e-6;

@@ -8,7 +8,6 @@ function c2_constraints = is_2causal(W, dims, parties, tol)
         W = W{1};
     end
 
-    addpath('utils')
     d = prod(dims);
     actors = parties(2:end-1);
     N = length(parties) - 2;

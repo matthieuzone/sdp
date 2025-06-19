@@ -7,7 +7,6 @@ function causal_constraints = is_causal(W, dims, p, tol)
         W = W{1};
     end
 
-    addpath('utils')
     d = prod(dims);
     actors = p(2:end-1);
     N = length(p) - 2;

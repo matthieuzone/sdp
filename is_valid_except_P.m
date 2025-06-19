@@ -1,5 +1,4 @@
 function valid_constraints = is_valid_except_P(W, dims, parties, tol)
-    addpath('utils')
     
     valid_constraints = [];
 

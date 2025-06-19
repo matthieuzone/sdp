@@ -11,7 +11,6 @@ function P_constraints = is_P_causal(W, P, dims, parties, tol)
     actors = parties(2:end-1);
     F = parties{end};
     
-    addpath('utils')
     d = prod(dims);
     N = length(P);
     P_constraints = true;

@@ -1,7 +1,5 @@
 function compatible_constraints = is_compatible(W, K1, K2, dims, parties, tol)
 
-    addpath('utils')
-
     if iscell(W)
         W = W{1};
     end

@@ -1,5 +1,4 @@
 function PSD_constraints = is_PSD(W, tol)
-    addpath('utils')
     
     if ~exist('tol','var')
         tol = 1e-6;
