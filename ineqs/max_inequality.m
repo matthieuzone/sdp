@@ -1,27 +1,35 @@
-function [W, M] = max_inequality(ineq, class, niter)
+function [W, M] = max_inequality(ineq, class, niter, verbose)
+
+    if nargin < 4
+        verbose = false;
+    end
 
     ops = sdpsettings('solver','mosek','verbose',0);
 
     d = [2, 2, 2, 2, 2, 2];
     p = {{[]}, {1, 2}, {3, 4}, {5, 6}, {[]}};
 
-    
     idd = [1,0,0,1];
     id_CJ = pure_to_mixed(idd);
     p0 = pure_to_mixed([1,0]);
     p1 = pure_to_mixed([0,1]);
     t01 = Tensor(p0, p1);
-    M = {{{t01, t01}, {id_CJ, zeros(4,4)}}, 
-        {{t01, t01} , {id_CJ, zeros(4,4)}}, 
-        {{t01, t01}, {id_CJ, zeros(4,4)}}};
+    t10 = Tensor(p1, p0);
+    M = {{{id_CJ, zeros(4,4)}, {t01, t10}}, 
+        {{id_CJ, zeros(4,4)}, {t01, t10}}, 
+        {{id_CJ, zeros(4,4)}, {t01, t10}}};
     % M = {{{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}, 
     %     {{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}, 
     %     {{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}};
 
     for iter = 1:niter
-        disp(['Iteration: ', num2str(iter)]);
+        if verbose
+            disp(['Iteration: ', num2str(iter)]);
+        end
 
-        %disp('Optimizing W');
+        if verbose
+            disp('Optimizing W');
+        end
         W = sdpvar(2^6, 2^6, 'hermitian', 'complex');
         switch class
             case 'causal'
@@ -42,26 +50,50 @@ function [W, M] = max_inequality(ineq, class, niter)
 
         optimize(cst, score(calc_proba(W, M), ineq), ops);
         W = value(W);
-        %disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
-
-        for i = 1:3
-            %disp(['Optimizing M{', num2str(i), '}{1}']);
-            M{i}{1}{1} = sdpvar(4,4, 'hermitian', 'complex');
-            M{i}{1}{2} = sdpvar(4,4, 'hermitian', 'complex');
-            cst = et(is_PSD(M{i}{1}{2}), is_PSD(M{i}{1}{1}));
-            cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1} + M{i}{1}{2}, 2, [2 2]) - eye(2)));
-            optimize(cst, score(calc_proba(W, M), ineq), ops);
-            M{i}{1}{1} = value(M{i}{1}{1});
-            M{i}{1}{2} = value(M{i}{1}{2});
-            %disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
-
-            %disp(['Optimizing M{', num2str(i), '}{2}']);
-            M{i}{2}{1} = sdpvar(4,4, 'hermitian', 'complex');
-            cst = is_PSD(M{i}{2}{1});
-            cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1}, 2, [2 2]) - eye(2)));
-            optimize(cst, score(calc_proba(W, M), ineq), ops);
-            M{i}{2}{1} = value(M{i}{2}{1});
+        if verbose
+            disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
         end
-        disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+
+        % for i = 1:3
+        %     if verbose
+        %         disp(['Optimizing M{', num2str(i), '}{1}{1}']);
+        %     end
+        %     M{i}{1}{1} = sdpvar(4,4, 'hermitian', 'complex');
+        %     cst = is_PSD(M{i}{1}{1});
+        %     cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1}, 2, [2 2]) - eye(2)));
+        %     optimize(cst, score(calc_proba(W, M), ineq), ops);
+        %     M{i}{1}{1} = value(M{i}{1}{1});
+        %     if verbose
+        %         disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+        %     end
+
+        %     if verbose
+        %         disp(['Optimizing M{', num2str(i), '}{2}{1}']);
+        %     end
+        %     M{i}{2}{1} = sdpvar(4,4, 'hermitian', 'complex');
+        %     cst = is_PSD(M{i}{2}{1});
+        %     cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1} + M{i}{2}{2}, 2, [2 2]) - eye(2)));
+        %     optimize(cst, score(calc_proba(W, M), ineq), ops);
+        %     M{i}{2}{1} = value(M{i}{2}{1});
+        %     if verbose
+        %         disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+        %     end
+
+        %     if verbose
+        %         disp(['Optimizing M{', num2str(i), '}{2}{2}']);
+        %     end
+        %     M{i}{2}{2} = sdpvar(4,4, 'hermitian', 'complex');
+        %     cst = is_PSD(M{i}{2}{2});
+        %     cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1} + M{i}{2}{2}, 2, [2 2]) - eye(2)));
+        %     optimize(cst, score(calc_proba(W, M), ineq), ops);
+        %     M{i}{2}{2} = value(M{i}{2}{2});
+        %     if verbose
+        %         disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+        %     end
+
+        % end
+        if verbose
+            disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+        end
     end
 end
