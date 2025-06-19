@@ -25,7 +25,6 @@ function causal_constraints = is_causal(W, dims, p, tol)
             Wk{i} = sdpvar(d,d, 'hermitian', 'complex');
         end
         Wk{i}
-        causal_constraints = et(causal_constraints, is_PSD(Wk{i}, tol));
         causal_constraints = et(causal_constraints, is_valid(Wk{i}, dims, p, tol));
         causal_constraints = et(causal_constraints, is_compatible(Wk{i}, p{i}, actorsexclusion(actors, p{i}), dims, p, tol));
         S = S + Wk{i};

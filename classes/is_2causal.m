@@ -30,7 +30,6 @@ function c2_constraints = is_2causal(W, dims, parties, tol)
                 Wk{i} = sdpvar(d,d, 'hermitian', 'complex');
             end
 
-            c2_constraints = et(c2_constraints, is_PSD(Wk{i}, tol));
             c2_constraints = et(c2_constraints, is_valid_except_P(Wk{i}, dims, parties, tol));
             c2_constraints = et(c2_constraints, is_compatible(Wk{i}, subs{i}, actorsexclusion(actors, subs{i}), dims, parties, tol));
             S = S + Wk{i};

@@ -1,9 +1,9 @@
 function [W, M] = max_inequality(ineq, class, niter)
 
-    ops = sdpsettings('solver','mosek','verbose',0);
+    ops = sdpsettings('solver','mosek','verbose',1);
 
     d = [2, 2, 2, 2, 2, 2];
-    parties = {{[]}, {1, 2}, {3, 4}, {5, 6}, {[]}};
+    p = {{[]}, {1, 2}, {3, 4}, {5, 6}, {[]}};
 
     M = {{rpair(), {eye(4)/2, zeros(4,4)}}, 
         {rpair(), {eye(4)/2, zeros(4,4)}}, 
@@ -19,13 +19,16 @@ function [W, M] = max_inequality(ineq, class, niter)
         W = sdpvar(2^6, 2^6, 'hermitian', 'complex');
         switch class
             case 'causal'
-                cst = superop_in_QCCC_cone(W, d, parties);
+                cst = superop_in_QCCC_cone(W, d, p);
             case 'QCCC'
-                cst = superop_in_QCCC_cone(W, d, parties);
+                cst = superop_in_QCCC_cone(W, d, p);
             case '2-causal'
-                cst = is_2causal(W, d, parties);
+                cst = is_2causal(W, d, p);
             case 'some-causality'
-                cst = asmit_some_causality(W, d, parties);
+                cst = asmit_some_causality(W, d, p);
+            case 'valid'
+                %cst = superop_in_valid_cone(W, d, p);
+                cst = is_valid(W, d, p);
             otherwise
                 error('Unknown class');
         end
@@ -41,7 +44,6 @@ function [W, M] = max_inequality(ineq, class, niter)
             M{i}{1}{2} = sdpvar(4,4, 'hermitian', 'complex');
             cst = et(is_PSD(M{i}{1}{2}), is_PSD(M{i}{1}{1}));
             cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1} + M{i}{1}{2}, 2, [2 2]) - eye(2)));
-            
             optimize(cst, score(calc_proba(W, M), ineq), ops);
             M{i}{1}{1} = value(M{i}{1}{1});
             M{i}{1}{2} = value(M{i}{1}{2});

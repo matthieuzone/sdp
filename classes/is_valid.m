@@ -23,8 +23,10 @@ function valid_constraints = is_valid(W, dims, parties, tol)
 
     if exist('tol','var')
         valid_constraints = nullconstraints(valid_constraints, tol);
+        valid_constraints = et(valid_constraints, is_PSD(W, tol));
     else
         valid_constraints = nullconstraints(valid_constraints);
+        valid_constraints = et(valid_constraints, is_PSD(W));
     end
 
 end

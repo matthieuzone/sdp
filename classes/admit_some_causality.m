@@ -35,7 +35,6 @@ function sc_constraints = admit_some_causality(W, dims, parties, tol)
                     continue;
                 end
                 Wk{i}{j} = sdpvar(d,d, 'hermitian', 'complex');
-                sc_constraints = et(sc_constraints, is_PSD(Wk{i}{j}, tol));
                 sc_constraints = et(sc_constraints, is_valid_except_P(Wk{i}{j}, dims, parties, tol));
                 sc_constraints = et(sc_constraints, is_compatible(Wk{i}{j}, subs{i}, K2s{j}, dims, parties, tol));
                 S = S + Wk{i}{j};

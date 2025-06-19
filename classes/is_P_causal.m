@@ -1,5 +1,7 @@
 function P_constraints = is_P_causal(W, P, dims, parties, tol)
 
+    error("bad implementation");
+
     if ~exist('tol','var')
         tol = 1e-6;
     end
@@ -24,7 +26,6 @@ function P_constraints = is_P_causal(W, P, dims, parties, tol)
             Wk{i} = sdpvar(d,d, 'hermitian', 'complex');
         end
 
-        P_constraints = et(P_constraints, is_PSD(Wk{i}, tol));
         P_constraints = et(P_constraints, is_valid(Wk{i}, dims, parties),tol);
         P_constraints = et(P_constraints, is_compatible(Wk{i}, P{i}, [actorsexclusion(actors, P{i}), F], dims, parties, tol));
         %pour toute matrice, machin est causal
