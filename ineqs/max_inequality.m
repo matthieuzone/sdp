@@ -1,4 +1,4 @@
-function max_inequality(ineq, class, niter)
+function [W, M] = max_inequality(ineq, class, niter)
 
     ops = sdpsettings('solver','mosek','verbose',0);
 
@@ -8,6 +8,9 @@ function max_inequality(ineq, class, niter)
     M = {{rpair(), {eye(4)/2, zeros(4,4)}}, 
         {rpair(), {eye(4)/2, zeros(4,4)}}, 
         {rpair(), {eye(4)/2, zeros(4,4)}}};
+    % M = {{{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}, 
+    %     {{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}, 
+    %     {{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}};
 
     for iter = 1:niter
         disp(['Iteration: ', num2str(iter)]);
@@ -26,23 +29,23 @@ function max_inequality(ineq, class, niter)
             otherwise
                 error('Unknown class');
         end
-        cst = et(cst, nullconstraints(trace(W) - 1));
+        cst = et(cst, nullconstraints(trace(W) - 8));
 
-        optimize(cst, score(W, M, ineq), ops);
+        optimize(cst, score(calc_proba(W, M), ineq), ops);
         W = value(W);
-        disp(['Score: ', num2str(score(W, M, ineq))]);
+        disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
 
         for i = 1:3
-            for a = 1:2
-                disp(['Optimizing M{', num2str(i), '}{1}{', num2str(a), '}']);
-                M{i}{1}{a} = sdpvar(4,4, 'hermitian', 'complex');
-                cst = is_PSD(M{i}{1}{a});
-                cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1} + M{i}{1}{2}, 1, [2 2]) - eye(2)));
-                
-                optimize(cst, score(W, M, ineq), ops);
-                M{i}{1}{a} = value(M{i}{1}{a});
-                disp(['Score: ', num2str(score(W, M, ineq))]);
-            end
+            disp(['Optimizing M{', num2str(i), '}{1}']);
+            M{i}{1}{1} = sdpvar(4,4, 'hermitian', 'complex');
+            M{i}{1}{2} = sdpvar(4,4, 'hermitian', 'complex');
+            cst = et(is_PSD(M{i}{1}{2}), is_PSD(M{i}{1}{1}));
+            cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1} + M{i}{1}{2}, 2, [2 2]) - eye(2)));
+            
+            optimize(cst, score(calc_proba(W, M), ineq), ops);
+            M{i}{1}{1} = value(M{i}{1}{1});
+            M{i}{1}{2} = value(M{i}{1}{2});
+            disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
         end
     end
 end

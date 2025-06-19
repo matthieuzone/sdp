@@ -1,4 +1,4 @@
-function proba = proba(W, M)
+function proba = calc_proba(W, M)
     proba = sdpvar(8,8,'full');
     for o = 0:7
         for i = 0:7
