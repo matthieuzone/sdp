@@ -1,5 +1,7 @@
 function causal_constraints = is_causal(W, dims, p, tol)
 
+    error("wrong implementation, use QCCC inseas")
+
     if ~exist('tol','var')
         tol = 1e-6;
     end
@@ -18,11 +20,11 @@ function causal_constraints = is_causal(W, dims, p, tol)
 
     for i = 1:N
         if i == N
-            Wk{1} = W - sum(cat(3, Wk{1:N-1}), 3);
+            Wk{i} = W - sum(cat(3, Wk{1:N-1}), 3);
         else
             Wk{i} = sdpvar(d,d, 'hermitian', 'complex');
         end
-
+        Wk{i}
         causal_constraints = et(causal_constraints, is_PSD(Wk{i}, tol));
         causal_constraints = et(causal_constraints, is_valid(Wk{i}, dims, p, tol));
         causal_constraints = et(causal_constraints, is_compatible(Wk{i}, p{i}, actorsexclusion(actors, p{i}), dims, p, tol));
