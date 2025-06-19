@@ -8,7 +8,7 @@ function A = rsim()
 end
 
 function A = rpsd(n)
-    A = randn(n);
+    A = randn(n) + 1i*randn(n);
     A = A*A';
     A = A/(2*trace(A));
 end

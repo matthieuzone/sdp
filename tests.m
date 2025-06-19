@@ -1,4 +1,4 @@
-ops = sdpsettings('verbose', 0, 'solver', 'mosek');
+ops = sdpsettings('verbose', 1, 'solver', 'mosek');
 
 disp("grenoble");
 c = 1/sqrt(3)*[1,1,1];
