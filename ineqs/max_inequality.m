@@ -1,6 +1,6 @@
-function [W, M] = max_inequality(ineq, class, niter, verbose)
+function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, verbose)
 
-    if nargin < 4
+    if nargin < 5
         verbose = false;
     end
 
@@ -30,7 +30,7 @@ function [W, M] = max_inequality(ineq, class, niter, verbose)
         if verbose
             disp('Optimizing W');
         end
-        W = sdpvar(2^6, 2^6, 'hermitian', 'complex');
+        W = sdpvar(2^6, 2^6); %, 'hermitian', 'complex');
         switch class
             case 'causal'
                 cst = superop_in_QCCC_cone(W, d, p);
@@ -41,8 +41,8 @@ function [W, M] = max_inequality(ineq, class, niter, verbose)
             case 'some-causality'
                 cst = admit_some_causality(W, d, p);
             case 'valid'
-                %cst = superop_in_valid_cone(W, d, p);
-                cst = is_valid(W, d, p);
+                cst = superop_in_valid_cone(W, d, p);
+                %cst = is_valid(W, d, p);
             otherwise
                 error('Unknown class');
         end
@@ -54,44 +54,45 @@ function [W, M] = max_inequality(ineq, class, niter, verbose)
             disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
         end
 
-        % for i = 1:3
-        %     if verbose
-        %         disp(['Optimizing M{', num2str(i), '}{1}{1}']);
-        %     end
-        %     M{i}{1}{1} = sdpvar(4,4, 'hermitian', 'complex');
-        %     cst = is_PSD(M{i}{1}{1});
-        %     cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1}, 2, [2 2]) - eye(2)));
-        %     optimize(cst, score(calc_proba(W, M), ineq), ops);
-        %     M{i}{1}{1} = value(M{i}{1}{1});
-        %     if verbose
-        %         disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
-        %     end
+        if optimize_instruments
+            for i = 1:3
+                if verbose
+                    disp(['Optimizing M{', num2str(i), '}{1}{1}']);
+                end
+                M{i}{1}{1} = sdpvar(4,4, 'hermitian', 'complex');
+                cst = is_PSD(M{i}{1}{1});
+                cst = et(cst, nullconstraints(PartialTrace(M{i}{1}{1}, 2, [2 2]) - eye(2)));
+                optimize(cst, score(calc_proba(W, M), ineq), ops);
+                M{i}{1}{1} = value(M{i}{1}{1});
+                if verbose
+                    disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+                end
 
-        %     if verbose
-        %         disp(['Optimizing M{', num2str(i), '}{2}{1}']);
-        %     end
-        %     M{i}{2}{1} = sdpvar(4,4, 'hermitian', 'complex');
-        %     cst = is_PSD(M{i}{2}{1});
-        %     cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1} + M{i}{2}{2}, 2, [2 2]) - eye(2)));
-        %     optimize(cst, score(calc_proba(W, M), ineq), ops);
-        %     M{i}{2}{1} = value(M{i}{2}{1});
-        %     if verbose
-        %         disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
-        %     end
+                if verbose
+                    disp(['Optimizing M{', num2str(i), '}{2}{1}']);
+                end
+                M{i}{2}{1} = sdpvar(4,4, 'hermitian', 'complex');
+                cst = is_PSD(M{i}{2}{1});
+                cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1} + M{i}{2}{2}, 2, [2 2]) - eye(2)));
+                optimize(cst, score(calc_proba(W, M), ineq), ops);
+                M{i}{2}{1} = value(M{i}{2}{1});
+                if verbose
+                    disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+                end
 
-        %     if verbose
-        %         disp(['Optimizing M{', num2str(i), '}{2}{2}']);
-        %     end
-        %     M{i}{2}{2} = sdpvar(4,4, 'hermitian', 'complex');
-        %     cst = is_PSD(M{i}{2}{2});
-        %     cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1} + M{i}{2}{2}, 2, [2 2]) - eye(2)));
-        %     optimize(cst, score(calc_proba(W, M), ineq), ops);
-        %     M{i}{2}{2} = value(M{i}{2}{2});
-        %     if verbose
-        %         disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
-        %     end
-
-        % end
+                if verbose
+                    disp(['Optimizing M{', num2str(i), '}{2}{2}']);
+                end
+                M{i}{2}{2} = sdpvar(4,4, 'hermitian', 'complex');
+                cst = is_PSD(M{i}{2}{2});
+                cst = et(cst, nullconstraints(PartialTrace(M{i}{2}{1} + M{i}{2}{2}, 2, [2 2]) - eye(2)));
+                optimize(cst, score(calc_proba(W, M), ineq), ops);
+                M{i}{2}{2} = value(M{i}{2}{2});
+                if verbose
+                    disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
+                end
+            end
+        end
         if verbose
             disp(['Score: ', num2str(score(calc_proba(W, M), ineq))]);
         end
