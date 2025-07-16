@@ -1,6 +1,6 @@
-function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, verbose)
+function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, instruments_init, verbose)
 
-    if nargin < 5
+    if nargin < 6
         verbose = false;
     end
 
@@ -9,18 +9,7 @@ function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, verbo
     d = [2, 2, 2, 2, 2, 2];
     p = {{[]}, {1, 2}, {3, 4}, {5, 6}, {[]}};
 
-    idd = [1,0,0,1];
-    id_CJ = pure_to_mixed(idd);
-    p0 = pure_to_mixed([1,0]);
-    p1 = pure_to_mixed([0,1]);
-    t01 = Tensor(p0, p1);
-    t10 = Tensor(p1, p0);
-    M = {{{id_CJ, zeros(4,4)}, {t01, t10}}, 
-        {{id_CJ, zeros(4,4)}, {t01, t10}}, 
-        {{id_CJ, zeros(4,4)}, {t01, t10}}};
-    % M = {{{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}, 
-    %     {{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}, 
-    %     {{eye(4)/2, zeros(4,4)}, {eye(4)/2, zeros(4,4)}}};
+    M = instruments_init;
 
     for iter = 1:niter
         if verbose
@@ -30,7 +19,7 @@ function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, verbo
         if verbose
             disp('Optimizing W');
         end
-        W = sdpvar(2^6, 2^6); %, 'hermitian', 'complex');
+        W = sdpvar(prod(d), prod(d), 'hermitian'); %, 'hermitian', 'complex');
         switch class
             case 'causal'
                 cst = superop_in_QCCC_cone(W, d, p);
