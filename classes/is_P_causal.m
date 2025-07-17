@@ -1,6 +1,6 @@
 function P_constraints = is_P_causal(W, P, dims, parties, tol)
 
-    error("bad implementation");
+    error("not implemented");
 
     if ~exist('tol','var')
         tol = 1e-6;
@@ -8,8 +8,7 @@ function P_constraints = is_P_causal(W, P, dims, parties, tol)
     if iscell(W)
         W = W{1};
     end
-
-    
+ 
     actors = parties(2:end-1);
     F = parties{end};
     

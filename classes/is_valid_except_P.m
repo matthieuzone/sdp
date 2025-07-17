@@ -23,5 +23,5 @@ function valid_constraints = is_valid_except_P(W, dims, parties, tol)
     else
         valid_constraints = nullconstraints(valid_constraints);
         valid_constraints = et(valid_constraints, is_PSD(W));
-
+    end
 end
