@@ -1,12 +1,27 @@
-function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, instruments_init, verbose)
+function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, instruments_init, d, verbose)
 
-    if nargin < 6
+    if nargin < 7
         verbose = false;
     end
 
-    ops = sdpsettings('solver','mosek','verbose',0);
+    ops = sdpsettings('solver','scs','verbose',1);
 
-    d = [2, 2, 2, 2, 2, 2];
+    if nargin < 6
+        d = [2, 2, 2, 2, 2, 2];
+    end
+    if nargin < 5
+        % best found instruments in dim 2*2
+        idd = [1,0,0,1];
+        id_CJ = pure_to_mixed(idd);
+        p0 = pure_to_mixed([1,0]);
+        p1 = pure_to_mixed([0,1]);
+        t01 = Tensor(p0, p1);
+        t10 = Tensor(p1, p0);
+        instruments_init = {{{id_CJ, zeros(4,4)}, {t01, t10}}, 
+            {{id_CJ, zeros(4,4)}, {t01, t10}}, 
+            {{id_CJ, zeros(4,4)}, {t01, t10}}};
+    end
+
     p = {{[]}, {1, 2}, {3, 4}, {5, 6}, {[]}};
 
     M = instruments_init;

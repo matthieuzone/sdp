@@ -1,1 +1,1 @@
-this uses https://github.com/alastair-abbott/qsuperops
+this uses code taken from https://github.com/alastair-abbott/qsuperops with small additions
