@@ -1,4 +1,6 @@
 function proba = calc_proba(W, M)
+    %calc_proba - Calculate the probability distribution from a superoperator W and instruments M.
+
     proba = sdpvar(8,8,'full');
     for o = 0:7
         for i = 0:7

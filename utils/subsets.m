@@ -1,4 +1,6 @@
 function powerSet = subsets(bucket)
+%SUBSETS Generate the power set of a given bucket.
+
     % Convert the bucket to a row vector to ensure consistent subset orientation
     bucket = bucket(:).';
     n = numel(bucket);

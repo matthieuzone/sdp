@@ -1,3 +1,5 @@
+%to generate a random instrument with one output
+
 function A = rsim()
     good = false;
     while ~good

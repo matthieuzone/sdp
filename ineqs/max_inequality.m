@@ -1,11 +1,18 @@
 function [W, M] = max_inequality(ineq, class, niter, optimize_instruments, instruments_init, d, verbose)
+    %max_inequality - Optimize a superoperator W and instruments M to maximize the score against an inequality.
+    %    % Inputs:
+    %    ineq - The inequality we try to violate, given as a vector with first the bound and then the coefficients.
+    %    class - The class of processes we use to try and violate it ('causal', 'QCCC', '2-causal', 'some-causality', 'valid').
+    %    niter - Number of iterations for the optimization.
+    %    optimize_instruments - Whether to optimize the instruments M or only W, if false, niter > 1 is useless.
+    %    instruments_init - Initial instruments to use, if empty, default ones are used.
+    %    d - Dimensions of the systems, if empty, default is [2, 2, 2, 2, 2, 2].
+    %    verbose - Whether to display the optimization process.
+    ops = sdpsettings('solver','scs','verbose',1);
 
     if nargin < 7
         verbose = false;
     end
-
-    ops = sdpsettings('solver','scs','verbose',1);
-
     if nargin < 6
         d = [2, 2, 2, 2, 2, 2];
     end

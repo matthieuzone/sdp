@@ -1,4 +1,7 @@
+%teste les violations sur les inégalités dans le dossier data, qui sont prises sous le format donné par le repo python causal-inequalities
+
 ineqs = readmatrix('data/interesting.txt');
+% ineqs = readmatrix('data/3lazy_some-causality_repr.txt');
 
 %canonical instruments from paper
 d = [2, 4, 2, 4, 2, 4];

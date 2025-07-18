@@ -1,5 +1,5 @@
 function result = actorsexclusion(x, y)
-    % actor_diff_prune - Removes indexes from actors in x if present in y.
+    % Removes indexes from actors in x if present in y.
     % Handles actors that are 1x1 or 1x2 cell arrays of index lists.
     %
     % Inputs:

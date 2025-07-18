@@ -1,3 +1,5 @@
+%to generate a random instrument with two outputs
+
 function rpair = rpair()
     good = false;
     while ~good

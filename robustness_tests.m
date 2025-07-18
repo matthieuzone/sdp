@@ -1,3 +1,5 @@
+% Teste la robustesse de differentes process face à differents classes.
+
 ops = sdpsettings('verbose', 1, 'solver', 'mosek');
 
 disp("grenoble");

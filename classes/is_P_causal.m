@@ -1,5 +1,6 @@
 function P_constraints = is_P_causal(W, P, dims, parties, tol)
 
+    %I didn't implement the recursive checks with conditional process matrices because "forall M" in sdp ?
     error("not implemented");
 
     if ~exist('tol','var')

@@ -1,6 +1,7 @@
 function causal_constraints = is_causal(W, dims, p, tol)
 
-    error("wrong implementation, use QCCC inseas")
+    %I didn't implement the recursive checks with conditional process matrices because "forall M" in sdp ?
+    error("wrong implementation, use QCCC instead")
 
     if ~exist('tol','var')
         tol = 1e-6;
